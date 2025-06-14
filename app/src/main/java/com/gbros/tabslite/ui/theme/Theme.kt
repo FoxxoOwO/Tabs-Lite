@@ -1,10 +1,12 @@
 package com.gbros.tabslite.ui.theme
 
+import android.content.Context
 import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.darkColorScheme
 import androidx.compose.material3.lightColorScheme
 import androidx.compose.runtime.Composable
+import androidx.compose.ui.platform.LocalContext
 
 
 private val LightColors = lightColorScheme(
@@ -74,9 +76,22 @@ private val DarkColors = darkColorScheme(
 
 @Composable
 fun AppTheme(
-    useDarkTheme: Boolean = isSystemInDarkTheme(),
     content: @Composable() () -> Unit
 ) {
+    val context = LocalContext.current
+    val sharedPreferences =  context.getSharedPreferences("preferences",Context.MODE_PRIVATE)
+    val followSystemThemePref = sharedPreferences.getBoolean("follow_system_theme", false)
+    val useDarkThemePref = sharedPreferences.getBoolean("use_dark_theme", false)
+
+    val useDarkTheme: Boolean
+
+    if (followSystemThemePref) {
+        useDarkTheme = isSystemInDarkTheme()
+    } else {
+        useDarkTheme = useDarkThemePref
+    }
+
+
     val colors = if (!useDarkTheme) {
         LightColors
     } else {

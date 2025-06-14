@@ -1,5 +1,6 @@
 package com.gbros.tabslite.view.homescreen
 
+import android.content.Context
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -15,12 +16,18 @@ import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Switch
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalUriHandler
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.res.vectorResource
@@ -32,6 +39,16 @@ import com.gbros.tabslite.ui.theme.AppTheme
 
 @Composable
 fun AboutDialog(modifier: Modifier = Modifier, onDismissRequest: () -> Unit, onExportPlaylistsClicked: () -> Unit, onImportPlaylistsClicked: () -> Unit) {
+    val context = LocalContext.current
+    val sharedPreferences = context.getSharedPreferences("preferences", Context.MODE_PRIVATE)
+
+    var followSystemThemePref by remember {
+        mutableStateOf(sharedPreferences.getBoolean("follow_system_theme", false))
+    }
+    var useDarkThemePref by remember {
+        mutableStateOf(sharedPreferences.getBoolean("use_dark_theme", false))
+    }
+
     Dialog(onDismissRequest = onDismissRequest) {
         Card(
             modifier = modifier,
@@ -95,6 +112,45 @@ fun AboutDialog(modifier: Modifier = Modifier, onDismissRequest: () -> Unit, onE
                 ) {
                     Icon(modifier = Modifier.padding(all = 8.dp), imageVector = ImageVector.vectorResource(id = R.drawable.ic_upload), contentDescription = "")
                     Text(modifier = Modifier.padding(all = 8.dp), text = stringResource(id = R.string.app_action_export_playlists))
+                }
+                Row(
+                    verticalAlignment = Alignment.CenterVertically,
+                    modifier = Modifier
+                        .padding(all = 8.dp)
+                        .fillMaxWidth()
+                ) {
+                    Text(modifier = Modifier.padding(all = 8.dp).weight(1f), text = stringResource(id = R.string.app_action_follow_system_theme))
+                    Switch(
+                        checked = followSystemThemePref,
+                        onCheckedChange = {
+                            followSystemThemePref = it
+                            sharedPreferences.edit()
+                                .putBoolean("follow_system_theme",it)
+                                .apply()
+                        }
+                    )
+                }
+                Row(
+                    verticalAlignment = Alignment.CenterVertically,
+                    modifier = Modifier
+                        .padding(all = 8.dp)
+                        .fillMaxWidth()
+                ) {
+                    Text(modifier = Modifier.padding(all = 8.dp).weight(1f), text = stringResource(id = R.string.app_action_switch_theme))
+                    Switch(
+                        checked = useDarkThemePref,
+                        onCheckedChange = {
+                            // Only change theme if not following system
+                            if (!followSystemThemePref) {
+                                useDarkThemePref = it
+                                sharedPreferences.edit()
+                                    .putBoolean("use_dark_theme",it)
+                                    .apply()
+
+                            }
+                        },
+                        enabled = !followSystemThemePref // Disable switch if following system theme
+                    )
                 }
             }
 
