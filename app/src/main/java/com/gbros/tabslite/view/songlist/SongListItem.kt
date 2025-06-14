@@ -41,11 +41,12 @@ fun SongListItem(
             Text(
                 text = song.artistName,
                 style = MaterialTheme.typography.bodyMedium,
+                color = MaterialTheme.colorScheme.onBackground,
             )
         }
         Column {
-            Text(text = song.type)
-            Text(text = String.format(stringResource(id = R.string.tab_version_abbreviation), song.version))
+            Text(text = song.type,color = MaterialTheme.colorScheme.onBackground)
+            Text(text = String.format(stringResource(id = R.string.tab_version_abbreviation), song.version),color = MaterialTheme.colorScheme.onBackground)
         }
     }
 }
