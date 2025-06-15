@@ -1,5 +1,6 @@
 package com.gbros.tabslite.view.homescreen
 
+import android.app.Activity
 import android.app.Activity.RESULT_OK
 import android.content.ContentResolver
 import android.content.Intent
@@ -140,7 +141,9 @@ fun HomeScreen(
         }
     }
     var pagerNav by remember { mutableIntStateOf(-1) }
-    
+
+    val context = LocalContext.current
+    var themeChanged by remember { mutableStateOf(false) }
     var showAboutDialog by remember { mutableStateOf(false) }
     val contentResolver = LocalContext.current.contentResolver
 
@@ -160,7 +163,12 @@ fun HomeScreen(
 
     if (showAboutDialog) {
         AboutDialog(
-            onDismissRequest = { showAboutDialog = false },
+            onDismissRequest = { showAboutDialog = false
+                if (themeChanged) {
+                    // Trigger activity restart
+                    (context as? Activity)?.recreate()
+                }
+                               },
             onExportPlaylistsClicked = {
                 showAboutDialog = false
 
@@ -177,7 +185,8 @@ fun HomeScreen(
 
                 // launch a file picker to choose the file to import
                 importPlaylistsPickerLauncher.launch("application/json")
-            }
+            },
+            onThemeChanged = { themeChanged = true }
         )
     }
 

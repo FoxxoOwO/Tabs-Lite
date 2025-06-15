@@ -38,7 +38,7 @@ import com.gbros.tabslite.R
 import com.gbros.tabslite.ui.theme.AppTheme
 
 @Composable
-fun AboutDialog(modifier: Modifier = Modifier, onDismissRequest: () -> Unit, onExportPlaylistsClicked: () -> Unit, onImportPlaylistsClicked: () -> Unit) {
+fun AboutDialog(modifier: Modifier = Modifier, onDismissRequest: () -> Unit, onExportPlaylistsClicked: () -> Unit, onImportPlaylistsClicked: () -> Unit, onThemeChanged: () -> Unit = {}) {
     val context = LocalContext.current
     val sharedPreferences = context.getSharedPreferences("preferences", Context.MODE_PRIVATE)
 
@@ -127,6 +127,7 @@ fun AboutDialog(modifier: Modifier = Modifier, onDismissRequest: () -> Unit, onE
                             sharedPreferences.edit()
                                 .putBoolean("follow_system_theme",it)
                                 .apply()
+                            onThemeChanged()
                         }
                     )
                 }
@@ -146,6 +147,7 @@ fun AboutDialog(modifier: Modifier = Modifier, onDismissRequest: () -> Unit, onE
                                 sharedPreferences.edit()
                                     .putBoolean("use_dark_theme",it)
                                     .apply()
+                                onThemeChanged()
 
                             }
                         },
@@ -174,6 +176,6 @@ fun AboutDialog(modifier: Modifier = Modifier, onDismissRequest: () -> Unit, onE
 @Composable @Preview
 private fun AboutDialogPreview() {
     AppTheme {
-        AboutDialog(Modifier, {}, {}) {}
+        AboutDialog(Modifier, {}, {}, {}) {}
     }
 }
